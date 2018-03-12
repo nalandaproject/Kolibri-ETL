@@ -1,0 +1,7 @@
+kolibri_databases/
+kolibri_content_databases/
+masteredLogData/
+masteredContentData/
+local_settings.py
+Code/Config
+Code/Fetcher.log
