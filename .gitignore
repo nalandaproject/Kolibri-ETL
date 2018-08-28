@@ -6,3 +6,4 @@ local_settings.py
 Code/Config
 Code/Fetcher.log
 Code/__pycache__/
+Code/testpy.py
