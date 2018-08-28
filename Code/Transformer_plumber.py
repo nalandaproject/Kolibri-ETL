@@ -25,23 +25,25 @@ class Transformer_plumber(object):
         logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
         logging.info('Transformation started !')
 
-        transformerObj = transformer.Transformer()
-        transformerObj.sync_student_info(stagingpath,nalandapath);
-        transformerObj.sync_class_info(stagingpath, nalandapath);
-        transformerObj.sync_school_info(stagingpath, nalandapath);
-        transformerObj.sync_content(stagingpath, nalandapath);
+        transformerObj = transformer.Transformer(stagingpath, nalandapath)
+        transformerObj.sync_student_info();
+        transformerObj.sync_class_info();
+        transformerObj.sync_school_info();
+        transformerObj.sync_content();
 
-        transformerObj.completed_questions_aggregation_student(start_date, stagingpath, nalandapath)
-        transformerObj.exercise_mastered_by_student(start_date, stagingpath, nalandapath)
-        transformerObj.exercise_attempts_by_students(start_date, stagingpath, nalandapath)
-        transformerObj.correct_questions_aggregation_student(start_date, stagingpath, nalandapath)
-        transformerObj.attempted_questions_aggregation_student(start_date, stagingpath, nalandapath)
-        transformerObj.mastery_level_aggregation_class(start_date, stagingpath, nalandapath)
-        transformerObj.mastery_level_aggregation_school(start_date, stagingpath, nalandapath)
+        transformerObj.completed_questions_aggregation_student(start_date)
+        transformerObj.exercise_mastered_by_student(start_date)
+        transformerObj.exercise_attempts_by_students(start_date)
+        transformerObj.correct_questions_aggregation_student(start_date)
+        transformerObj.attempted_questions_aggregation_student(start_date)
+        transformerObj.mastery_level_aggregation_class(start_date)
+        transformerObj.mastery_level_aggregation_school(start_date)
 
-        transformerObj.user_session_student(start_date, stagingpath, nalandapath)
-        transformerObj.user_session_aggregation_class(start_date, stagingpath, nalandapath)
-        transformerObj.user_session_aggregation_school(start_date, stagingpath, nalandapath)
+        transformerObj.lesson_result(start_date)
+
+        transformerObj.user_session_student(start_date)
+        transformerObj.user_session_aggregation_class(start_date)
+        transformerObj.user_session_aggregation_school(start_date)
         
         transformerObj.clear_resource()
 
