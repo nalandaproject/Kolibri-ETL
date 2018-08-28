@@ -7,3 +7,5 @@ Code/Config
 Code/Fetcher.log
 Code/__pycache__/
 Code/testpy.py
+Download_databases_backup.py
+Download_databases.py
