@@ -3,7 +3,7 @@
 -- Host: localhost    Database: nalanda_latest_db
 -- ------------------------------------------------------
 -- Server version	5.7.12
-DROP DATABASE IF EXISTS test_nalanda;
+DROP DATABASE IF EXISTS test_db_nalanda;
 CREATE DATABASE test_nalanda;
 use test_nalanda;
 
@@ -735,6 +735,32 @@ LOCK TABLES `usersession_student` WRITE;
 /*!40000 ALTER TABLE `usersession_student` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+--
+-- Table structure for table `lesson_lesson`
+-- 
+DROP TABLE IF EXISTS `lesson_lesson`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `lesson_lesson` (
+  `id` varchar(40) NOT NULL,
+  `lesson_id` char(32) NOT NULL,
+  `lesson_name` varchar(60) NOT NULL,
+  `class_id` char(32) NOT NULL,
+  `lesson_content` longtext NOT NULL,
+  `date` datetime(6) NOT NULL,
+  PRIMARY KEY (`lesson_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `lesson_lesson`
+--
+
+LOCK TABLES `lesson_lesson` WRITE;
+/*!40000 ALTER TABLE `lesson_lesson` DISABLE KEYS */;
+/*!40000 ALTER TABLE `lesson_lesson` ENABLE KEYS */;
+UNLOCK TABLES;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
