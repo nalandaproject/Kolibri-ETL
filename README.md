@@ -46,13 +46,11 @@ It’s an application used fetch the data from kolibri central server and transf
 
     `sudo apt install python3-pip`
     
-    `pip3 install virtualenv`
+    `virtualenv -p python3 ENV`
     
 10. Create virtual environment
 
     `cd Kolibri-ETL/`
-    
-    `virtualenv --no-site-packages ENV`
     
     `source ENV/bin/activate`
     
@@ -60,7 +58,7 @@ It’s an application used fetch the data from kolibri central server and transf
 
     `sudo apt-get install -y python-dev libmysqlclient-dev`
     
-	  `sudo apt-get install python3-dev`
+    `sudo apt-get install python3-dev`
     
 12. Install dependencies
 
