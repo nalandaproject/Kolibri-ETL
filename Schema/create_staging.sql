@@ -1,4 +1,4 @@
-DROP DATABASE IF EXISTS test_db_staging;
+DROP DATABASE IF EXISTS staging;
 CREATE DATABASE staging;
 use staging;
 CREATE TABLE content_contentnode (id char(32) NOT NULL PRIMARY KEY, license_name varchar(50) NULL, license_description varchar(400) NULL,title varchar(200) NOT NULL , content_id char(32) NOT NULL, channel_id char(32) NOT NULL, description varchar(400) NULL, sort_order real NULL,  license_owner varchar(200) NOT NULL, author varchar(200) NOT NULL, kind varchar(200) NOT NULL, available bool NOT NULL, stemmed_metaphone varchar(1800) NOT NULL, lft integer unsigned NOT NULL, rght integer unsigned NOT NULL, tree_id integer unsigned NOT NULL, level integer unsigned NOT NULL, license_id integer NULL REFERENCES content_license (id), lang_id varchar(7) NULL REFERENCES content_language(id), coach_content bool NOT NULL,parent_id char(32) NULL REFERENCES content_contentnode (id))character set utf8 collate utf8_general_ci;

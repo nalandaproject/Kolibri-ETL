@@ -3,9 +3,9 @@
 -- Host: localhost    Database: nalanda_latest_db
 -- ------------------------------------------------------
 -- Server version	5.7.12
-DROP DATABASE IF EXISTS test_db_nalanda;
-CREATE DATABASE test_nalanda;
-use test_nalanda;
+DROP DATABASE IF EXISTS test;
+CREATE DATABASE test;
+use test;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -737,6 +737,62 @@ UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 --
+-- Table structure for table `exam_creation`
+--
+
+DROP TABLE IF EXISTS `exam_creation`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `exam_creation` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `student_id` varchar(60) NOT NULL,
+  `exam_count` int(11) NOT NULL,
+  `active_exam_count` int(11) NOT NULL,
+  `complete_exam_count` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `exam_creation`
+--
+
+LOCK TABLES `exam_creation` WRITE;
+/*!40000 ALTER TABLE `exam_creation` DISABLE KEYS */;
+/*!40000 ALTER TABLE `exam_creation` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+--
+-- Table structure for table `exam_exam`
+--
+
+DROP TABLE IF EXISTS `exam_exam`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `exam_exam` (
+  `id` varchar(40) NOT NULL,
+  `exam_id` varchar(60) NOT NULL,
+  `exam_title` longtext NOT NULL,
+  `date` datetime(6) NOT NULL,
+  `content_id` varchar(32) NOT NULL,
+  `channel_id` varchar(32) NOT NULL,
+  `question_count` int(11) NOT NULL,
+  `student_id` varchar(60) NOT NULL,
+  `correct_questions` int(11) NOT NULL,
+  `question_sources` longtext NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `exam_exam`
+--
+
+LOCK TABLES `exam_exam` WRITE;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `lesson_lesson`
 -- 
 DROP TABLE IF EXISTS `lesson_lesson`;
@@ -771,3 +827,4 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2017-09-25 15:54:55
+
