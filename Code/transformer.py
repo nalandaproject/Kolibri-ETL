@@ -904,8 +904,6 @@ class Transformer(object):
 				.all()
 	
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
-			logging.info("RESULT_Exam")
-			logging.info(result_set)
 			for record in result_set:
 				exam_id = record[0]
 				exam_title = record[1]
@@ -965,10 +963,7 @@ class Transformer(object):
 						.all()
 
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
-			logging.info("RESULT#############")
-			logging.info(result_set)
-
-
+			
 			for record in result_set:
 				_student_id = record[0]
 				student_id = self.uuid2int(_student_id)
