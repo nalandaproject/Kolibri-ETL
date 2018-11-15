@@ -775,12 +775,12 @@ CREATE TABLE `exam_exam` (
   `exam_id` varchar(60) NOT NULL,
   `exam_title` longtext NOT NULL,
   `date` datetime(6) NOT NULL,
-  `content_id` varchar(32) NOT NULL,
   `channel_id` varchar(32) NOT NULL,
   `question_count` int(11) NOT NULL,
   `student_id` varchar(60) NOT NULL,
   `correct_questions` int(11) NOT NULL,
-  `question_sources` longtext NOT NULL,
+  `class_id` varchar(60) NOT NULL,
+  `question_sources` longtext  NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
