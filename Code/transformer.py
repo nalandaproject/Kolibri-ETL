@@ -38,7 +38,7 @@ class Transformer(object):
 		self.Membership = Table('kolibriauth_membership',staging_metadata,autoload=True,autoload_with=self.staging_engine)
 		self.Content_Node = Table('content_contentnode',staging_metadata,autoload=True,autoload_with=self.staging_engine)
 		self.Assessment = Table('content_assessmentmetadata',staging_metadata,autoload=True,autoload_with=self.staging_engine)
-		self.Exams = Table('exams_exam',staging_metadata,autoload=True,autoload_with=self.staging_engine)
+		self.Exam_Detail_Log= Table('exams_exam',staging_metadata,autoload=True,autoload_with=self.staging_engine)
 		self.Exam_Log = Table('logger_examlog',staging_metadata,autoload=True,autoload_with=self.staging_engine)
 		self.Exam_Attempt = Table('logger_examattemptlog',staging_metadata,autoload=True,autoload_with=self.staging_engine)
 		self.staging_session = Session(self.staging_engine)
@@ -282,7 +282,7 @@ class Transformer(object):
 								.query(self.Content_Node.c.id,self.Content_Node.c.title,self.Content_Node.c.kind,self.Content_Node.c.content_id)\
 								.filter(self.Content_Node.c.parent_id==root[0]).all()
 				res = {}
-				print ("sub_level:", sub_level)
+				# print ("sub_level:", sub_level)
 				res['id'] = root[0]
 				res['channelId'] = channel_id
 				res['contentId'] = root[3]
@@ -885,51 +885,62 @@ class Transformer(object):
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
 			logging.info('The synchronization of Exam mastery is started at'+ time.strftime("%c"))
 			
-			select_exam_log = self.staging_session\
-								.query(self.Exam_Log.c.id, func.date(self.Exam_Log.c.completion_timestamp).label("date"),\
-								 self.Exam_Log.c.exam_id, self.Exam_Log.c.user_id)\
-								.filter(self.Exam_Log.c.dataset_id.in_(result))\
-								.filter(self.Exam_Log.c.completion_timestamp >= start_date).filter(self.Exam_Log.c.closed == 1)\
-								.subquery()
-			join_exams = self.staging_session\
-							.query(select_exam_log,self.Exams.c.title, self.Exams.c.question_count, self.Exams.c.question_sources)\
-							.join(self.Exams, self.Exams.c.id==select_exam_log.c.exam_id).subquery()
+		
+			select_exam = self.staging_session.query(self.Exam_Detail_Log.c.id,self.Exam_Detail_Log.c.title,self.Exam_Detail_Log.c.channel_id,self.Exam_Detail_Log.c.question_count,\
+						self.Exam_Detail_Log.c.question_sources, self.Exam_Detail_Log.c.collection_id).subquery()
+		
+			exam_status = self.staging_session.query(select_exam, self.Exam_Log.c.user_id,func.date(self.Exam_Log.c.completion_timestamp).label("date"))\
+						.filter(self.Exam_Log.c.completion_timestamp.isnot(None))\
+						.join(self.Exam_Log, self.Exam_Log.c.exam_id==select_exam.c.id).subquery()			
+			
+			result_set = self.staging_session.query(exam_status, func.count(self.Exam_Attempt.c.user_id))\
+						.filter(self.Exam_Attempt.c.correct == 1)\
+						.filter(self.Exam_Attempt.c.examlog_id == self.Exam_Log.c.id)\
+						.filter(self.Exam_Attempt.c.user_id == exam_status.c.user_id)\
+						.group_by(exam_status, self.Exam_Log.c.id).all()
+						#.join(self.Exam_Attempt, self.Exam_Attempt.c.user_id == exam_status.c.user_id)\
+						#
+						
 
-			result_set = self.staging_session.query(join_exams.c.exam_id, join_exams.c.title, join_exams.c.date, self.Exam_Attempt.c.content_id,\
-				self.Exam_Attempt.c.channel_id, join_exams.c.question_count,join_exams.c.question_sources, join_exams.c.user_id,func.count(join_exams.c.user_id))\
-				.filter(self.Exam_Attempt.c.correct == 1)\
-				.filter(self.Exam_Attempt.c.user_id==join_exams.c.user_id)\
-				.join(self.Exam_Attempt, self.Exam_Attempt.c.examlog_id==join_exams.c.id)\
-				.group_by(join_exams.c.date,join_exams.c.exam_id,join_exams.c.user_id)\
-				.all()
-	
+
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
+			logging.info('result')
+			logging.info(result_set)
+			
 			for record in result_set:
+				
 				exam_id = record[0]
 				exam_title = record[1]
-				date = record[2]
-				content_id = record[3]
-				channel_id = record[4]
-				question_count = record[5]
-				question_sources = record[6]
-				_student_id = record[7]
+				channel_id = record[2]
+				question_count = record[3]
+				question_sources = record[4]
+				_class_id = record[5]
+				class_id = self.uuid2int(_class_id)
+				_student_id = record[6]
 				student_id = self.uuid2int(_student_id)
+				date = record[7]
 				correct_questions= record[8]
 
 				old_record = self.nalanda_session.query(self.Exam).filter(self.Exam.exam_id == exam_id)\
 							.filter(self.Exam.student_id == student_id).filter(self.Exam.date == date).first()
+				# logging.info(old_record)
+				# sys.exit(0)
 			
 				if not old_record:
-					nalanda_record = self.Exam(id=str(uuid.uuid4()),exam_id = exam_id, exam_title=exam_title, date=date,\
-									content_id=content_id, channel_id=channel_id, question_count=question_count,\
-									question_sources=question_sources,student_id=student_id, correct_questions=correct_questions)
+					print ("IF Here")
+					nalanda_record = self.Exam(id=str(uuid.uuid4()),exam_id = exam_id, exam_title=exam_title, \
+									 channel_id=channel_id, question_count=question_count, question_sources=question_sources,\
+									 class_id=class_id,student_id=student_id,date=date, correct_questions=correct_questions)
 					self.nalanda_session.add(nalanda_record)
+					
 
 				else:
+					print ("Else Here")
 					self.nalanda_session.query(self.Exam)\
-					.filter(self.Exam.exam_id == exam_id, self.Exam.date == date)\
-					.update({'exam_title':exam_title, 'content_id':content_id, 'channel_id':channel_id, 'question_count':question_count,\
-						'question_sources':question_sources, 'student_id':student_id, 'correct_questions':correct_questions})
+					.filter(self.Exam.exam_id == exam_id, self.Exam.student_id == student_id, self.Exam.date == date)\
+					.update({'exam_title':exam_title, 'channel_id':channel_id, 'question_count':question_count,'question_sources':question_sources,\
+						 'class_id':class_id,'correct_questions':correct_questions})
+
 			self.nalanda_session.commit()
 			
 		except Exception as e:
@@ -943,19 +954,21 @@ class Transformer(object):
 		try:
 			select_data = self.staging_session.query(self.Exam_Log.c.exam_id, self.Exam_Log.c.user_id)\
 							.subquery()
+			get_active_count = self.staging_session.query(func.count(select_data.c.user_id))\
+								.filter()
 
 			select_exam_creationlog = self.staging_session.query(func.count(select_data.c.user_id))\
-									.filter(self.Exams.c.active==1)\
-									.join(self.Exams, self.Exams.c.id == select_data.c.exam_id)\
+									.filter(self.Exam_Detail_Log.c.active==1)\
+									.join(self.Exam_Detail_Log, self.Exam_Detail_Log.c.id == select_data.c.exam_id)\
 									.subquery()
 
 			join_exam_creationlog = self.staging_session.query(func.count(select_data.c.user_id))\
-									.join(self.Exams, self.Exams.c.id == select_data.c.exam_id)\
+									.join(self.Exam_Detail_Log, self.Exam_Detail_Log.c.id == select_data.c.exam_id)\
 									.subquery()
 
 			join_exam_userlog = self.staging_session.query(func.count(select_data.c.user_id))\
 								.filter(self.Exam_Log.c.closed == 1)\
-								.join(self.Exams, self.Exams.c.id == select_data.c.exam_id)\
+								.join(self.Exam_Detail_Log, self.Exam_Detail_Log.c.id == select_data.c.exam_id)\
 								.subquery()						
 									
 			result_set = self.staging_session.query(self.Exam_Log.c.user_id, join_exam_creationlog, select_exam_creationlog, join_exam_userlog)\
