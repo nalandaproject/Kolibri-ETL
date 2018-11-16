@@ -244,7 +244,7 @@ class Transformer(object):
 	def dfs_content_reader(self, root, channel_id):
 		try:
 			count = 0
-			if root[2] != 'topic':
+			if root[2] != 'topic' and root[2] !='video':
 				exercise = self.staging_session\
 								.query(self.Assessment.c.number_of_assessments)\
 								.filter(self.Assessment.c.contentnode_id==root[0]).first()
@@ -263,7 +263,7 @@ class Transformer(object):
 				count = res['counts']
 
 				json_obj = json.dumps(res, ensure_ascii=False)
-				old_record = self.nalanda_session.query(self.Content).filter(self.Content.topic_id==res['id']).first()
+				old_record = self.nalanda_session.query(self.Content).filter(self.Content.topic_id==result[0]).first()
 				if not old_record:
 					nalanda_record = self.Content(topic_id=res['id'],content_id=res['contentId'],channel_id=res['channelId'],
 													topic_name=res['name'],total_questions=res['total'],sub_topics=json_obj, sub_topics_total=res['counts'])
@@ -282,7 +282,6 @@ class Transformer(object):
 								.query(self.Content_Node.c.id,self.Content_Node.c.title,self.Content_Node.c.kind,self.Content_Node.c.content_id)\
 								.filter(self.Content_Node.c.parent_id==root[0]).all()
 				res = {}
-				# print ("sub_level:", sub_level)
 				res['id'] = root[0]
 				res['channelId'] = channel_id
 				res['contentId'] = root[3]
@@ -292,6 +291,8 @@ class Transformer(object):
 				subtopics = 0
 				for node in sub_level:
 					node_res = self.dfs_content_reader(node,channel_id)
+					if not node_res:
+						continue
 					total += node_res['total']
 					subtopics += node_res['counts']
 					if 'id' in node_res:
@@ -602,10 +603,7 @@ class Transformer(object):
 						self.Content_Summary_Log.c.channel_id,func.count(selectMasteryLog.c.user_id))\
 						.join(self.Content_Summary_Log, self.Content_Summary_Log.c.id==selectMasteryLog.c.summarylog_id)\
 						.group_by(selectMasteryLog.c.user_id, self.Content_Summary_Log.c.content_id, self.Content_Summary_Log.c.id)\
-						.all()
-			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
-			logging.info("result_set")
-			logging.info(result_set)		
+						.all()		
 			for record in result_set:
 				_student_id = record[0]
 				student_id = self.uuid2int(_student_id)
@@ -619,10 +617,6 @@ class Transformer(object):
 					continue
 
 				topic_ids = self.staging_session.query(self.Content_Node.c.id).filter(self.Content_Node.c.content_id==content_id).all()
-				logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
-				logging.info(content_id)
-				logging.info("Topic IDS")
-				logging.info(topic_ids)
 				ids = set()
 				for topic_id in topic_ids:
 					# id for the leaf-level topic
@@ -631,16 +625,13 @@ class Transformer(object):
 						ids.add(current_id)
 						parent_id = self.staging_session.query(self.Content_Node.c.parent_id).filter(self.Content_Node.c.id==current_id).first()
 						# update the current id with the parent id
-						logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
-						logging.info(parent_id)
+						# logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
+						# logging.info(parent_id)
 						# if parent_id:
 						current_id = parent_id[0]
 						# else:
 						# current_id = None
 				ids.add('')
-				logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
-				logging.info("IDSSSS")
-				logging.info(ids)
 				for id in ids:
 					temp = channel_id
 					if id == '':
@@ -764,6 +755,7 @@ class Transformer(object):
 					continue
 				date = record[1]
 			
+				
 				if tz_regex.search(record[3]) and tz_regex.search(record[2]):
 					end = self.parse_timezonestamp(record[3])
 					start = self.parse_timezonestamp(record[2])
@@ -897,12 +889,9 @@ class Transformer(object):
 						.filter(self.Exam_Attempt.c.correct == 1)\
 						.filter(self.Exam_Attempt.c.examlog_id == self.Exam_Log.c.id)\
 						.filter(self.Exam_Attempt.c.user_id == exam_status.c.user_id)\
-						.group_by(exam_status, self.Exam_Log.c.id).all()
+						.group_by(exam_status, self.Exam_Detail_Log.c.id).all()
 						#.join(self.Exam_Attempt, self.Exam_Attempt.c.user_id == exam_status.c.user_id)\
-						#
-						
-
-
+			
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
 			logging.info('result')
 			logging.info(result_set)
@@ -927,7 +916,6 @@ class Transformer(object):
 				# sys.exit(0)
 			
 				if not old_record:
-					print ("IF Here")
 					nalanda_record = self.Exam(id=str(uuid.uuid4()),exam_id = exam_id, exam_title=exam_title, \
 									 channel_id=channel_id, question_count=question_count, question_sources=question_sources,\
 									 class_id=class_id,student_id=student_id,date=date, correct_questions=correct_questions)
@@ -935,7 +923,6 @@ class Transformer(object):
 					
 
 				else:
-					print ("Else Here")
 					self.nalanda_session.query(self.Exam)\
 					.filter(self.Exam.exam_id == exam_id, self.Exam.student_id == student_id, self.Exam.date == date)\
 					.update({'exam_title':exam_title, 'channel_id':channel_id, 'question_count':question_count,'question_sources':question_sources,\
@@ -1013,9 +1000,6 @@ class Transformer(object):
 						.join(self.Collection, self.Collection.c.id == self.Lesson_Log.c.collection_id)\
 						.filter(func.date(self.Lesson_Log.c.date_created) >= start_date)\
 						.filter(self.Collection.c.kind == 'classroom').all()
-
-
-
 
 			for record in result_set:
 				lesson_id = record[0]
@@ -1269,7 +1253,7 @@ class Transformer(object):
 		if tz_regex.search(value):
 			tz = pytz.timezone(tz_regex.search(value).groups()[0])
 			utc_value = tz_regex.sub('', value)
-			dt_obj = datetime.datetime.strptime(utc_value, '%Y-%m-%d %I:%M:%S.%f')
+			dt_obj = datetime.datetime.strptime(utc_value, '%Y-%m-%d %H:%M:%S.%f')
 		return dt_obj
 
 	def clear_resource(self):
