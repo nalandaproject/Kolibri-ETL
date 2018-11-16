@@ -191,8 +191,27 @@ class Fetcher(object):
                                EntityTable.c.complete:row[8], EntityTable.c.correct:row[9], EntityTable.c.hinted:row[10], EntityTable.c.answer:row[11], \
                                EntityTable.c.simple_answer:row[12], EntityTable.c.interaction_history:row[13], EntityTable.c.content_id:row[14],\
                                EntityTable.c.channel_id:row[15], EntityTable.c.dataset_id:row[16], EntityTable.c.examlog_id:row[17], EntityTable.c.user_id:row[18], EntityTable.c.start_timestamp:row[19] })
-                else:
-                    sinkConnection.execute(EntityTable.insert(), row)
+                
+                elif str(EntityTable.name) == 'content_contentnode':
+                    res = self.checkRecordExist(str(row[0]), EntityTable, sinkConnection, row)
+                    if res != 0:
+                        # logging.info("inside else kolibriauth_collection") 
+                        stmt = update(EntityTable).where(EntityTable.c.id==str(row[0])).values({EntityTable.c.title: row[1], \
+                               EntityTable.c.content_id:row[2], EntityTable.c.channel_id:row[3], EntityTable.c.description: row[4], \
+                               EntityTable.c.sort_order:row[5], EntityTable.c.license_owner:row[6], EntityTable.c.author:row[7],\
+                               EntityTable.c.kind:row[8], EntityTable.c.available:row[9], EntityTable.c.stemmed_metaphone:row[10], EntityTable.c.lft:row[11], \
+                               EntityTable.c.rght:row[12], EntityTable.c.tree_id:row[13], EntityTable.c.level:row[14],\
+                               EntityTable.c.lang_id:row[15], EntityTable.c.license_name:row[16], EntityTable.c.license_description:row[17], EntityTable.c.parent_id:row[18]})
+                
+                elif str(EntityTable.name) == 'content_assessmentmetadata':
+                    res = self.checkRecordExist(str(row[0]), EntityTable, sinkConnection, row)
+                    if res != 0:
+                        # logging.info("inside else kolibriauth_collection") 
+                        stmt = update(EntityTable).where(EntityTable.c.id==str(row[0])).values({EntityTable.c.assessment_item_ids: row[1], \
+                               EntityTable.c.number_of_assessments:row[2], EntityTable.c.mastery_model:row[3], EntityTable.c.randomize: row[4], \
+                               EntityTable.c.is_manipulable:row[5], EntityTable.c.contentnode_id:row[6]})
+                # else:
+                #     sinkConnection.execute(EntityTable.insert(), row)
             
             logging.info("End database fetced name:"+ argsList['dbName'])
             end_time = datetime.datetime.now()
