@@ -36,22 +36,22 @@ class FetcherPlumber(object):
         logging.info('log table names')
         logging.info(logsourceTableNames)
 
-        # content related
-        contentfilePath = config.get('SourceLocation', 'contentdirectorypath')
-        contentsourceTableNames = config.get('SourceDatabase', 'contentnames')
+        # # content related
+        # contentfilePath = config.get('SourceLocation', 'contentdirectorypath')
+        # contentsourceTableNames = config.get('SourceDatabase', 'contentnames')
 
-        logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
-        logging.info('content table names')
-        logging.info(contentsourceTableNames)
+        # logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
+        # logging.info('content table names')
+        # logging.info(contentsourceTableNames)
 
         sinkDbConnectionString = config.get('ConnectionString','sinkDbConnectionString')
         extension = config.get('SourceLocation', 'extension')
 
-        # load content data
-        self.LoadSourceToStaging(contentfilePath,sinkDbConnectionString,contentsourceTableNames,extension)
+        # # load content data
+        # self.LoadSourceToStaging(contentfilePath,sinkDbConnectionString,contentsourceTableNames,extension)
 
-        logging.basicConfig(filename='Fetcher.log', level=logging.INFO)       
-        logging.info('Successfully fetched all the content data!')
+        # logging.basicConfig(filename='Fetcher.log', level=logging.INFO)       
+        # logging.info('Successfully fetched all the content data!')
 
         # load log data
         self.LoadSourceToStaging(logfilePath,sinkDbConnectionString,logsourceTableNames,extension)
