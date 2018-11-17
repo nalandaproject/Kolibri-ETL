@@ -881,20 +881,21 @@ class Transformer(object):
 			select_exam = self.staging_session.query(self.Exam_Detail_Log.c.id,self.Exam_Detail_Log.c.title,self.Exam_Detail_Log.c.channel_id,self.Exam_Detail_Log.c.question_count,\
 						self.Exam_Detail_Log.c.question_sources, self.Exam_Detail_Log.c.collection_id).subquery()
 		
-			exam_status = self.staging_session.query(select_exam, self.Exam_Log.c.user_id,func.date(self.Exam_Log.c.completion_timestamp).label("date"))\
-						.filter(self.Exam_Log.c.completion_timestamp.isnot(None))\
-						.join(self.Exam_Log, self.Exam_Log.c.exam_id==select_exam.c.id).subquery()			
+			exam_status = self.staging_session.query(select_exam,(self.Exam_Log.c.id).label("e_id"), self.Exam_Log.c.user_id,func.date(self.Exam_Log.c.completion_timestamp).label("date"))\
+						.join(self.Exam_Log, self.Exam_Log.c.exam_id==select_exam.c.id).filter(self.Exam_Log.c.completion_timestamp.isnot(None)).subquery()			
 			
-			result_set = self.staging_session.query(exam_status, func.count(self.Exam_Attempt.c.user_id))\
+			result_set = self.staging_session.query(exam_status, func.count(self.Exam_Attempt.c.correct))\
+						.join(self.Exam_Attempt, self.Exam_Attempt.c.examlog_id == exam_status.c.e_id)\
 						.filter(self.Exam_Attempt.c.correct == 1)\
-						.filter(self.Exam_Attempt.c.examlog_id == self.Exam_Log.c.id)\
-						.filter(self.Exam_Attempt.c.user_id == exam_status.c.user_id)\
-						.group_by(exam_status, self.Exam_Detail_Log.c.id).all()
+						.group_by(exam_status.c.id, exam_status.c.e_id).all()
 						#.join(self.Exam_Attempt, self.Exam_Attempt.c.user_id == exam_status.c.user_id)\
+						# .filter(self.Exam_Attempt.c.examlog_id == self.Exam_Log.c.id)\
+						# .filter(self.Exam_Attempt.c.user_id == exam_status.c.user_id)\
+						
 			
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
-			logging.info('result')
-			logging.info(result_set)
+			# logging.info('result')
+			#logging.info(result_set)
 			
 			for record in result_set:
 				
@@ -905,10 +906,10 @@ class Transformer(object):
 				question_sources = record[4]
 				_class_id = record[5]
 				class_id = self.uuid2int(_class_id)
-				_student_id = record[6]
+				_student_id = record[7]
 				student_id = self.uuid2int(_student_id)
-				date = record[7]
-				correct_questions= record[8]
+				date = record[8]
+				correct_questions= record[9]
 
 				old_record = self.nalanda_session.query(self.Exam).filter(self.Exam.exam_id == exam_id)\
 							.filter(self.Exam.student_id == student_id).filter(self.Exam.date == date).first()
@@ -916,6 +917,7 @@ class Transformer(object):
 				# sys.exit(0)
 			
 				if not old_record:
+					print('IF')
 					nalanda_record = self.Exam(id=str(uuid.uuid4()),exam_id = exam_id, exam_title=exam_title, \
 									 channel_id=channel_id, question_count=question_count, question_sources=question_sources,\
 									 class_id=class_id,student_id=student_id,date=date, correct_questions=correct_questions)
@@ -923,6 +925,7 @@ class Transformer(object):
 					
 
 				else:
+					print('else')
 					self.nalanda_session.query(self.Exam)\
 					.filter(self.Exam.exam_id == exam_id, self.Exam.student_id == student_id, self.Exam.date == date)\
 					.update({'exam_title':exam_title, 'channel_id':channel_id, 'question_count':question_count,'question_sources':question_sources,\
