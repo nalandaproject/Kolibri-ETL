@@ -210,8 +210,6 @@ class Fetcher(object):
                         stmt = update(EntityTable).where(EntityTable.c.id==str(row[0])).values({EntityTable.c.assessment_item_ids: row[1], \
                                EntityTable.c.number_of_assessments:row[2], EntityTable.c.mastery_model:row[3], EntityTable.c.randomize: row[4], \
                                EntityTable.c.is_manipulable:row[5], EntityTable.c.contentnode_id:row[6]})
-                # else:
-                #     sinkConnection.execute(EntityTable.insert(), row)
             
             logging.info("End database fetced name:"+ argsList['dbName'])
             end_time = datetime.datetime.now()
