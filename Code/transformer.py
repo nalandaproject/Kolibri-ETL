@@ -750,11 +750,7 @@ class Transformer(object):
 						.filter(self.Exam_Log.c.completion_timestamp.isnot(None)).filter(self.Exam_Attempt.c.correct == 1)\
 						.group_by(self.Exam_Detail_Log.c.id, self.Exam_Attempt.c.examlog_id).all()
 			
-			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
-			logging.info('result')
-			logging.info(result_set)
 			for record in result_set:
-				
 				exam_id = record[0]
 				exam_title = record[1]
 				channel_id = record[2]
