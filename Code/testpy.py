@@ -39,7 +39,7 @@ parser.add_argument('-c','--city', help='Use the city name to transform kolibri 
 args = parser.parse_args()
 
 
-conn = pymysql.connect(host = "localhost", user = "root", passwd = "nalandapassword", database = "finalstaging")
+conn = pymysql.connect(host = "localhost", user = "root", passwd = "softcorner", database = "schools")
 cursor = conn.cursor()
 
 sql = "select dataset_id,name from kolibriauth_collection where parent_id is null"
@@ -71,7 +71,7 @@ def parse_schools(args):
 			index = set(ip.split())
 
 			for school_index in index:
-				dataset_id.append(choices[args.city][0][int(school_index)-1])
+				dataset_id.append(choices[args.city][1][int(school_index)-1])
 		print ("dataset_id:", dataset_id)
 		return dataset_id
 	except Exception as e:
@@ -84,5 +84,5 @@ def update_datsetid(dataset_id):
 if __name__ == "__main__":
 	dataset_id = parse_schools(args)
 	update_datsetid(dataset_id)
-	# transform_plumber = Transformer_plumber()
-	# transform_plumber.execute()
+	transform_plumber = Transformer_plumber()
+	transform_plumber.execute()

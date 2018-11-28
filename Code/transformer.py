@@ -207,6 +207,8 @@ class Transformer(object):
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
 			logging.info('The synchronization of sync_content is started at'+ time.strftime("%c"))
 
+			
+			
 			root_set = self.staging_session\
 							.query(self.Content_Node.c.id,self.Content_Node.c.title,self.Content_Node.c.kind,self.Content_Node.c.content_id)\
 							.filter(self.Content_Node.c.level==0)\
@@ -215,21 +217,25 @@ class Transformer(object):
 			res['topics'] = []
 			total = 0
 			sub_topics_total = 0
+
 			for root in root_set:
+				print('root',root)
 				dic = self.dfs_content_reader(root,root[0])
 				res['topics'].append(dic)
 				total += dic['total']
 				sub_topics_total += dic['counts']
+
 			json_obj = json.dumps(res, ensure_ascii=False)
 			old_record = self.nalanda_session.query(self.Content.topic_id)\
 							.filter(self.Content.topic_id=='').first()
+
 			if not old_record:
-				nalanda_record = self.Content(topic_id='',content_id='',topic_name='',channel_id='',total_questions=total,sub_topics=json_obj,sub_topics_total = sub_topics_total)
+				nalanda_record = self.Content(topic_id='',content_id='',topic_name='',channel_id='',total_questions=total,sub_topics=json_obj,sub_topics_total = sub_topics_total,parent_id = '')
 				self.nalanda_session.add(nalanda_record)
 			else:
 				self.nalanda_session.query(self.Content)\
 							.filter(self.Content.topic_id=='')\
-							.update({'sub_topics':json_obj,'total_questions':total, 'sub_topics_total':sub_topics_total})
+							.update({'sub_topics':json_obj,'total_questions':total, 'sub_topics_total':sub_topics_total})# 'parent_id':res['parent_id']})
 			self.nalanda_session.commit()
 			# self.clear_resource()
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
@@ -241,7 +247,7 @@ class Transformer(object):
 			logging.error(traceback.format_exc())
 			raise
 
-	def dfs_content_reader(self, root, channel_id):
+	def dfs_content_reader(self,root, channel_id):
 		try:
 			count = 0
 			if root[2] != 'topic' and root[2] !='video':
@@ -261,19 +267,26 @@ class Transformer(object):
 					res['total'] = 0
 					res['counts'] = 0
 				count = res['counts']
-
+				parentid = self.staging_session\
+						.query(self.Content_Node.c.parent_id)\
+						.filter(self.Content_Node.c.id ==res['id']).filter(self.Content_Node.c.content_id ==res['contentId']).all()
+				
+				for record in parentid:
+					res['parent_id'] = record[0]
 				json_obj = json.dumps(res, ensure_ascii=False)
 				old_record = self.nalanda_session.query(self.Content).filter(self.Content.topic_id==result[0]).first()
+			
 				if not old_record:
+					
 					nalanda_record = self.Content(topic_id=res['id'],content_id=res['contentId'],channel_id=res['channelId'],
-													topic_name=res['name'],total_questions=res['total'],sub_topics=json_obj, sub_topics_total=res['counts'])
+													topic_name=res['name'],total_questions=res['total'],sub_topics=json_obj, sub_topics_total=res['counts'],parent_id=res['parent_id'])
 
 					self.nalanda_session.add(nalanda_record)
 				else:
 					self.nalanda_session.query(self.Content)\
 								.filter(self.Content.topic_id==res['id'])\
 								.update({'content_id':res['contentId'],'channel_id':res['channelId'],'topic_name':res['name'],\
-									'total_questions':res['total'],'sub_topics':json_obj,'sub_topics_total':res['counts']})
+									'total_questions':res['total'],'sub_topics':json_obj,'sub_topics_total':res['counts'],'parent_id':res['parent_id']})
 				self.nalanda_session.commit()
 				return res
 
@@ -287,6 +300,7 @@ class Transformer(object):
 				res['contentId'] = root[3]
 				res['name'] = root[1]
 				res['children'] = []
+
 				total = 0
 				subtopics = 0
 				for node in sub_level:
@@ -299,19 +313,25 @@ class Transformer(object):
 						res['children'].append(node_res)
 				res['total'] = total
 				res['counts'] = subtopics
-
+				parentid = self.staging_session\
+						.query(self.Content_Node.c.parent_id)\
+						.filter(self.Content_Node.c.id ==res['id']).filter(self.Content_Node.c.content_id ==res['contentId']).all()
+				
+				for record in parentid:
+					res['parent_id'] = record[0]
+				
 				json_obj = json.dumps(res, ensure_ascii=False)
 				old_record = self.nalanda_session.query(self.Content).filter(self.Content.topic_id==res['id']).first()
 				if not old_record:
 					nalanda_record = self.Content(topic_id=res['id'],content_id=res['contentId'],channel_id=res['channelId'],
-													topic_name=res['name'],total_questions=res['total'],sub_topics=json_obj, sub_topics_total=subtopics)
+													topic_name=res['name'],total_questions=res['total'],sub_topics=json_obj, sub_topics_total=subtopics ,parent_id=res['parent_id'])
 
 					self.nalanda_session.add(nalanda_record)
 				else:
 					self.nalanda_session.query(self.Content)\
 								.filter(self.Content.topic_id==res['id'])\
 								.update({'content_id':res['contentId'],'channel_id':res['channelId'],'topic_name':res['name'],\
-									'total_questions':res['total'],'sub_topics':json_obj,'sub_topics_total':subtopics})
+									'total_questions':res['total'],'sub_topics':json_obj,'sub_topics_total':subtopics,'parent_id':res['parent_id']})
 				self.nalanda_session.commit()
 				return res
 				logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
@@ -322,6 +342,9 @@ class Transformer(object):
 			logging.error(e)
 			logging.error(traceback.format_exc())
 			raise
+	# def parent_node(self):
+	# 	result = self.staging_session\
+	# 			.query(self.Content_Node.c.id,)
 
 	def completed_questions_aggregation_student(self, start_date):
 		try:
