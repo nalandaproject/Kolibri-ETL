@@ -33,6 +33,7 @@ CREATE TABLE `account_content` (
   `total_questions` int(11) NOT NULL,
   `sub_topics` longtext NOT NULL,
   `sub_topics_total` int(11) DEFAULT 0 NOT NULL,
+  `parent_id` varchar(32),
   PRIMARY KEY (`topic_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;

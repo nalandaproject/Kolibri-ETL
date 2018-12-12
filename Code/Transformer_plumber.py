@@ -39,6 +39,7 @@ class Transformer_plumber(object):
         transformerObj.mastery_level_aggregation_class(start_date)
         transformerObj.mastery_level_aggregation_school(start_date)
         transformerObj.exam_matrics(start_date)
+
         transformerObj.lesson_result(start_date)
 
         transformerObj.user_session_student(start_date)
