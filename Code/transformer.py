@@ -66,12 +66,6 @@ class Transformer(object):
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
 			logging.info('The synchronization of sync_student_info is started at'+ time.strftime("%c"))
 
-			"""totalFacilities = self.staging_session.query(self.Collection.c.dataset_id)\
-								.filter(self.Collection.c.kind == 'facility')\
-								.order_by(self.Collection.c.dataset_id.asc())\
-								.all()
-			result = [r[0] for r in totalFacilities]"""
-			# result = ['1c909db25a87489822cb526ebf90345c', 'e1811c05c7de79f920b06dc2e5dc51c1', '261b0c4bbdee20429fe24be348f4bd5d', '565e5fd16a9fbf63002e556fad9efa57', 'f80f24f36b7ac4e76d0be8d56711fadc', 'dd539473220aa5d171b7279c9c5d7fbd', '69ae14aa7eddafbda0a830e283580363', 'd4c91e21362201f93f989575006a39d1', 'a5c87ca4f32dce53c4499e3d57e5b19a']
 			student_mapping = self.staging_session\
 							.query(self.Membership.c.collection_id,self.Facility_User.c.id,self.Facility_User.c.username)\
 							.filter(self.Membership.c.dataset_id.in_(result))\
@@ -112,13 +106,6 @@ class Transformer(object):
 		try:
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
 			logging.info('The synchronization of sync_class_info is started at'+ time.strftime("%c"))		
-				
-			# totalFacilities = self.staging_session.query(self.Collection.c.dataset_id)\
-			# 					.filter(self.Collection.c.kind == 'facility')\
-			# 					.order_by(self.Collection.c.dataset_id.asc())\
-			# 					.all()
-			# result = [r[0] for r in totalFacilities]
-			# result = ['1c909db25a87489822cb526ebf90345c', 'e1811c05c7de79f920b06dc2e5dc51c1', '261b0c4bbdee20429fe24be348f4bd5d', '565e5fd16a9fbf63002e556fad9efa57', 'f80f24f36b7ac4e76d0be8d56711fadc', 'dd539473220aa5d171b7279c9c5d7fbd', '69ae14aa7eddafbda0a830e283580363', 'd4c91e21362201f93f989575006a39d1', 'a5c87ca4f32dce53c4499e3d57e5b19a']
 			student_count = self.staging_session\
 								.query(func.count(self.Facility_User.c.id),self.Membership.c.collection_id)\
 								.filter(self.Membership.c.dataset_id.in_(result))\
@@ -160,12 +147,6 @@ class Transformer(object):
 
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
 			logging.info('The synchronization of sync_school_info is started at'+ time.strftime("%c"))
-			# totalFacilities = self.staging_session.query(self.Collection.c.dataset_id)\
-			# 					.filter(self.Collection.c.kind == 'facility')\
-			# 					.order_by(self.Collection.c.dataset_id.asc())\
-			# 					.all()
-			# result = [r[0] for r in totalFacilities]
-			# result = ['1c909db25a87489822cb526ebf90345c', 'e1811c05c7de79f920b06dc2e5dc51c1', '261b0c4bbdee20429fe24be348f4bd5d', '565e5fd16a9fbf63002e556fad9efa57', 'f80f24f36b7ac4e76d0be8d56711fadc', 'dd539473220aa5d171b7279c9c5d7fbd', '69ae14aa7eddafbda0a830e283580363', 'd4c91e21362201f93f989575006a39d1', 'a5c87ca4f32dce53c4499e3d57e5b19a']
 			students = self.staging_session\
 								.query(self.Facility_User.c.id,self.Facility_User.c.facility_id, self.Membership.c.collection_id)\
 								.filter(self.Membership.c.dataset_id.in_(result))\
@@ -351,13 +332,6 @@ class Transformer(object):
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
 			logging.info('The synchronization of completed_questions_aggregation_student is started at'+ time.strftime("%c"))
 
-			# totalFacilities = self.staging_session.query(self.Collection.c.dataset_id)\
-			# 					.filter(self.Collection.c.kind == 'facility')\
-			# 					.order_by(self.Collection.c.dataset_id.asc())\
-			# 					.all()
-			# result = [r[0] for r in totalFacilities]
-			# result = ['1c909db25a87489822cb526ebf90345c', 'e1811c05c7de79f920b06dc2e5dc51c1', '261b0c4bbdee20429fe24be348f4bd5d', '565e5fd16a9fbf63002e556fad9efa57', 'f80f24f36b7ac4e76d0be8d56711fadc', 'dd539473220aa5d171b7279c9c5d7fbd', '69ae14aa7eddafbda0a830e283580363', 'd4c91e21362201f93f989575006a39d1', 'a5c87ca4f32dce53c4499e3d57e5b19a']
-
 			select_attempt_log = self.staging_session\
 								.query(self.Attempt_Log.c.user_id,func.date(self.Attempt_Log.c.completion_timestamp).label("date"),\
 									self.Attempt_Log.c.masterylog_id, self.Attempt_Log.c.dataset_id)\
@@ -445,13 +419,6 @@ class Transformer(object):
 		try:
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
 			logging.info('The synchronization of correct_questions_aggregation_student is started at'+ time.strftime("%c"))
-
-			# totalFacilities = self.staging_session.query(self.Collection.c.dataset_id)\
-			# 					.filter(self.Collection.c.kind == 'facility')\
-			# 					.order_by(self.Collection.c.dataset_id.asc())\
-			# 					.all()
-			# result = [r[0] for r in totalFacilities]
-			# result = ['1c909db25a87489822cb526ebf90345c', 'e1811c05c7de79f920b06dc2e5dc51c1', '261b0c4bbdee20429fe24be348f4bd5d', '565e5fd16a9fbf63002e556fad9efa57', 'f80f24f36b7ac4e76d0be8d56711fadc', 'dd539473220aa5d171b7279c9c5d7fbd', '69ae14aa7eddafbda0a830e283580363', 'd4c91e21362201f93f989575006a39d1', 'a5c87ca4f32dce53c4499e3d57e5b19a']
 			select_attempt_log = self.staging_session\
 								.query(self.Attempt_Log.c.user_id,func.date(self.Attempt_Log.c.completion_timestamp).label("date"),\
 									self.Attempt_Log.c.masterylog_id)\
@@ -525,13 +492,6 @@ class Transformer(object):
 		try:
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
 			logging.info('The synchronization of attempted_questions_aggregation_student is started at'+ time.strftime("%c"))
-
-			# totalFacilities = self.staging_session.query(self.Collection.c.dataset_id)\
-			# 					.filter(self.Collection.c.kind == 'facility')\
-			# 					.order_by(self.Collection.c.dataset_id.asc())\
-			# 					.all()
-			# result = [r[0] for r in totalFacilities]
-			# result = ['1c909db25a87489822cb526ebf90345c', 'e1811c05c7de79f920b06dc2e5dc51c1', '261b0c4bbdee20429fe24be348f4bd5d', '565e5fd16a9fbf63002e556fad9efa57', 'f80f24f36b7ac4e76d0be8d56711fadc', 'dd539473220aa5d171b7279c9c5d7fbd', '69ae14aa7eddafbda0a830e283580363', 'd4c91e21362201f93f989575006a39d1', 'a5c87ca4f32dce53c4499e3d57e5b19a']
 			
 			select_attempt_log = self.staging_session\
 								.query(self.Attempt_Log.c.user_id,func.date(self.Attempt_Log.c.start_timestamp).label("date"),\
@@ -609,9 +569,6 @@ class Transformer(object):
 		try:
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
 			logging.info('The synchronization of student mastered questions is started at'+ time.strftime("%c"))
-			# result = ['1c909db25a87489822cb526ebf90345c', 'e1811c05c7de79f920b06dc2e5dc51c1', '261b0c4bbdee20429fe24be348f4bd5d',
-			#  '565e5fd16a9fbf63002e556fad9efa57', 'f80f24f36b7ac4e76d0be8d56711fadc', 'dd539473220aa5d171b7279c9c5d7fbd', 
-			#  '69ae14aa7eddafbda0a830e283580363', 'd4c91e21362201f93f989575006a39d1', 'a5c87ca4f32dce53c4499e3d57e5b19a']
 			query = "SET sql_mode = '';"
 			sindbConnection = self.staging_session.connection()
 			sindbConnection.execute(query)
@@ -647,13 +604,7 @@ class Transformer(object):
 					while current_id:
 						ids.add(current_id)
 						parent_id = self.staging_session.query(self.Content_Node.c.parent_id).filter(self.Content_Node.c.id==current_id).first()
-						# update the current id with the parent id
-						# logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
-						# logging.info(parent_id)
-						# if parent_id:
 						current_id = parent_id[0]
-						# else:
-						# current_id = None
 				ids.add('')
 				for id in ids:
 					temp = channel_id
@@ -673,7 +624,6 @@ class Transformer(object):
 									.update({'mastered':old_record[0]+mastered_topics})
 					channel_id = temp
 			self.nalanda_session.commit()
-			# self.clear_resource()
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
 			logging.info('The synchronization of student mastered questions is completed at' + time.strftime("%c"))
 		except Exception as e:
@@ -687,8 +637,6 @@ class Transformer(object):
 		try:
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
 			logging.info('The synchronization of exercise attempts by student is started at'+ time.strftime("%c"))
-
-			# result = ['1c909db25a87489822cb526ebf90345c', 'e1811c05c7de79f920b06dc2e5dc51c1', '261b0c4bbdee20429fe24be348f4bd5d', '565e5fd16a9fbf63002e556fad9efa57', 'f80f24f36b7ac4e76d0be8d56711fadc', 'dd539473220aa5d171b7279c9c5d7fbd', '69ae14aa7eddafbda0a830e283580363', 'd4c91e21362201f93f989575006a39d1', 'a5c87ca4f32dce53c4499e3d57e5b19a']
 			result_set = self.staging_session.query(self.Content_Summary_Log.c.user_id, self.Content_Summary_Log.c.content_id,func.date(self.Content_Summary_Log.c.end_timestamp).label("date"),\
 									self.Content_Summary_Log.c.channel_id, func.count(self.Content_Summary_Log.c.user_id))\
 									.filter(between(self.Content_Summary_Log.c.progress,'0.25','1.0')).filter(self.Content_Summary_Log.c.kind == 'exercise')\
@@ -742,7 +690,6 @@ class Transformer(object):
 									.update({'attempt_exercise':old_record[0]+topic_attempts})
 					channel_id = temp
 			self.nalanda_session.commit()
-			# self.clear_resource()
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
 			logging.info('The synchronization of exercise attempts by student is completed at' + time.strftime("%c"))
 		except Exception as e:
@@ -756,7 +703,6 @@ class Transformer(object):
 		try:
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
 			logging.info('The synchronization of student user session is started at'+ time.strftime("%c"))
-			# result = ['1c909db25a87489822cb526ebf90345c', 'e1811c05c7de79f920b06dc2e5dc51c1', '261b0c4bbdee20429fe24be348f4bd5d', '565e5fd16a9fbf63002e556fad9efa57', 'f80f24f36b7ac4e76d0be8d56711fadc', 'dd539473220aa5d171b7279c9c5d7fbd', '69ae14aa7eddafbda0a830e283580363', 'd4c91e21362201f93f989575006a39d1', 'a5c87ca4f32dce53c4499e3d57e5b19a']
 			# Need to test this once again for user session it consider also teachers timestamp
 			subquery = self.staging_session.query(self.Role.c.user_id)
 
@@ -814,114 +760,20 @@ class Transformer(object):
 			logging.error(traceback.format_exc())
 			raise 
 
-	# def attempted_questions_in_exams(self, start_date):
-	# 	try:
-	# 		logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
-	# 		logging.info('The synchronization of attempted_questions_in_exams is started at'+ time.strftime("%c"))
-
-	# 		# result_set = self.staging_session\
-	# 		# 			.query(self.Exam_Attempt.c.id,func.date(self.Exam_Attempt.c.end_timestamp).label("date"),\
-	# 		# 			self.Exam_Attempt.c.user_id, func.count(self.Exam_Attempt.c.user_id))\
-	# 		# 			.filter(self.Exam_Attempt.c.examlog_id==self.Exam_Log.c.id)\
-	# 		# 			.filter(self.Exam_Attempt.c.dataset_id.in_(result))\
-	# 		# 			.filter(self.Exam_Attempt.c.start_timestamp >= start_date)\
-	# 		# 			.group_by(self.Exam_Attempt.c.id, self.Exam_Attempt.c.user_id, self.Exam_Attempt.c.end_timestamp)\
-	# 		# 		 	.all()
-	# 		select_exam_log = self.staging_session\
-	# 							.query(self.Exam_Log.c.id, func.date(self.Exam_Log.c.completion_timestamp).label("date"),\
-	# 							 self.Exam_Log.c.exam_id, self.Exam_Log.c.user_id)\
-	# 							.filter(self.Exam_Log.c.dataset_id.in_(result))\
-	# 							.filter(self.Exam_Log.c.completion_timestamp >= start_date).filter(self.Exam_Log.c.closed == 1)\
-	# 							.subquery()
-	# 		select_exam_log_1 = self.staging_session\
-	# 							.query(self.Exam_Log.c.id, func.date(self.Exam_Log.c.completion_timestamp).label("date"),\
-	# 							 self.Exam_Log.c.exam_id, self.Exam_Log.c.user_id)\
-	# 							.filter(self.Exam_Log.c.dataset_id.in_(result))\
-	# 							.filter(self.Exam_Log.c.completion_timestamp >= start_date).all()
-			
-	# 		print ("Result:",select_exam_log_1 )
-	# 		join_exams = self.staging_session\
-	# 						.query(select_exam_log,self.Exams.c.title, self.Exams.c.question_count, self.Exams.c.question_sources)\
-	# 						.join(self.Exams, self.Exams.c.id==select_exam_log.c.exam_id).subquery()
-
-	# 		join_exams_1 = self.staging_session\
-	# 						.query(select_exam_log,self.Exams.c.title, self.Exams.c.question_count, self.Exams.c.question_sources)\
-	# 						.join(self.Exams, self.Exams.c.id==select_exam_log.c.exam_id).all()
-	# 		print("Result-2:", join_exams_1)
-
-			
-	# 		result_set = self.staging_session.query(join_exams.c.exam_id, join_exams.c.title, join_exams.c.date, self.Exam_Attempt.c.content_id,\
-	# 			self.Exam_Attempt.c.channel_id, join_exams.c.question_count,join_exams.c.question_sources, join_exams.c.user_id,func.count(self.Exam_Attempt.c.user_id))\
-	# 			.join(self.Exam_Attempt, self.Exam_Attempt.c.examlog_id==join_exams.c.id)\
-	# 			.group_by(join_exams.c.date,join_exams.c.exam_id)\
-	# 			.all()
-
-	# 		logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
-	# 		logging.info("RESULT_attempted_ questions")
-	# 		logging.info(result_set)
-
-	# 		for record in result_set:
-	# 			exam_id = record[0]
-	# 			exam_title = record[1]
-	# 			date = record[2]
-	# 			content_id = record[3]
-	# 			channel_id = record[4]
-	# 			question_count = record[5]
-	# 			question_sources = record[6]
-	# 			_student_id = record[7]
-	# 			student_id = self.uuid2int(_student_id)
-	# 			attempted_questions= record[8]
-
-	# 			old_record = self.nalanda_session.query(self.Exam).filter(self.Exam.exam_id == exam_id)\
-	# 						.filter(self.Exam.student_id == student_id).filter(self.Exam.date == date).first()
-
-	# 			if not old_record:
-	# 				nalanda_record = self.Exam(id=str(uuid.uuid4()),exam_id = exam_id, exam_title=exam_title, date=date,\
-	# 								content_id=content_id, channel_id=channel_id, question_count=question_count,\
-	# 								question_sources=question_sources,student_id=student_id, attempted_questions=attempted_questions)
-	# 				self.nalanda_session.add(nalanda_record)
-
-	# 			else:
-	# 				self.nalanda_session.query(self.Exam)\
-	# 				.filter(self.Exam.exam_id == exam_id, self.Exam.date == date)\
-	# 				.update({'exam_title':exam_title, 'content_id':content_id, 'channel_id':channel_id, 'question_count':question_count,\
-	# 					'question_sources':question_sources, 'student_id':student_id, 'attempted_questions':attempted_questions})
-	# 		self.nalanda_session.commit()
-			
-	# 	except Exception as e:
-	# 		logging.basicConfig(filename='Fetcher.log', level=logging.ERROR)
-	# 		logging.error('There is an exception in the Transformer!')
-	# 		logging.error(e)
-	# 		logging.error(traceback.format_exc())
-	# 		raise
-
 	def exam_matrics (self,start_date):
 		try:
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
 			logging.info('The synchronization of Exam mastery is started at'+ time.strftime("%c"))
 			
-		
-			select_exam = self.staging_session.query(self.Exam_Detail_Log.c.id,self.Exam_Detail_Log.c.title,self.Exam_Detail_Log.c.channel_id,self.Exam_Detail_Log.c.question_count,\
-						self.Exam_Detail_Log.c.question_sources, self.Exam_Detail_Log.c.collection_id).subquery()
-		
-			exam_status = self.staging_session.query(select_exam,(self.Exam_Log.c.id).label("e_id"), self.Exam_Log.c.user_id,func.date(self.Exam_Log.c.completion_timestamp).label("date"))\
-						.join(self.Exam_Log, self.Exam_Log.c.exam_id==select_exam.c.id).filter(self.Exam_Log.c.completion_timestamp.isnot(None)).subquery()			
-			
-			result_set = self.staging_session.query(exam_status, func.count(self.Exam_Attempt.c.correct))\
-						.join(self.Exam_Attempt, self.Exam_Attempt.c.examlog_id == exam_status.c.e_id)\
-						.filter(self.Exam_Attempt.c.correct == 1)\
-						.group_by(exam_status.c.id, exam_status.c.e_id).all()
-						#.join(self.Exam_Attempt, self.Exam_Attempt.c.user_id == exam_status.c.user_id)\
-						# .filter(self.Exam_Attempt.c.examlog_id == self.Exam_Log.c.id)\
-						# .filter(self.Exam_Attempt.c.user_id == exam_status.c.user_id)\
-						
-			
-			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
-			# logging.info('result')
-			#logging.info(result_set)
+			result_set = self.staging_session.query(self.Exam_Detail_Log.c.id,self.Exam_Detail_Log.c.title,self.Exam_Detail_Log.c.channel_id,self.Exam_Detail_Log.c.question_count,\
+						self.Exam_Detail_Log.c.question_sources,self.Exam_Detail_Log.c.collection_id,self.Exam_Log.c.user_id,func.date(self.Exam_Log.c.completion_timestamp).label("date"),\
+						func.count(self.Exam_Attempt.c.correct),self.Exam_Log.c.id)\
+						.join(self.Exam_Log,self.Exam_Log.c.exam_id == self.Exam_Detail_Log.c.id)\
+						.join(self.Exam_Attempt, self.Exam_Attempt.c.examlog_id == self.Exam_Log.c.id)\
+						.filter(self.Exam_Log.c.completion_timestamp.isnot(None)).filter(self.Exam_Attempt.c.correct == 1)\
+						.group_by(self.Exam_Detail_Log.c.id, self.Exam_Attempt.c.examlog_id).all()
 			
 			for record in result_set:
-				
 				exam_id = record[0]
 				exam_title = record[1]
 				channel_id = record[2]
@@ -936,9 +788,7 @@ class Transformer(object):
 
 				old_record = self.nalanda_session.query(self.Exam).filter(self.Exam.exam_id == exam_id)\
 							.filter(self.Exam.student_id == student_id).filter(self.Exam.date == date).first()
-				# logging.info(old_record)
-				# sys.exit(0)
-			
+
 				if not old_record:
 					print('IF')
 					nalanda_record = self.Exam(id=str(uuid.uuid4()),exam_id = exam_id, exam_title=exam_title, \
@@ -956,63 +806,6 @@ class Transformer(object):
 
 			self.nalanda_session.commit()
 			
-		except Exception as e:
-			logging.basicConfig(filename='Fetcher.log', level=logging.ERROR)
-			logging.error('There is an exception in the Transformer!')
-			logging.error(e)
-			logging.error(traceback.format_exc())
-			raise
-
-	def exam_creation_data(self):
-		try:
-			select_data = self.staging_session.query(self.Exam_Log.c.exam_id, self.Exam_Log.c.user_id)\
-							.subquery()
-			get_active_count = self.staging_session.query(func.count(select_data.c.user_id))\
-								.filter()
-
-			select_exam_creationlog = self.staging_session.query(func.count(select_data.c.user_id))\
-									.filter(self.Exam_Detail_Log.c.active==1)\
-									.join(self.Exam_Detail_Log, self.Exam_Detail_Log.c.id == select_data.c.exam_id)\
-									.subquery()
-
-			join_exam_creationlog = self.staging_session.query(func.count(select_data.c.user_id))\
-									.join(self.Exam_Detail_Log, self.Exam_Detail_Log.c.id == select_data.c.exam_id)\
-									.subquery()
-
-			join_exam_userlog = self.staging_session.query(func.count(select_data.c.user_id))\
-								.filter(self.Exam_Log.c.closed == 1)\
-								.join(self.Exam_Detail_Log, self.Exam_Detail_Log.c.id == select_data.c.exam_id)\
-								.subquery()						
-									
-			result_set = self.staging_session.query(self.Exam_Log.c.user_id, join_exam_creationlog, select_exam_creationlog, join_exam_userlog)\
-						.group_by(self.Exam_Log.c.user_id)\
-						.all()
-
-			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
-			
-			for record in result_set:
-				_student_id = record[0]
-				student_id = self.uuid2int(_student_id)
-				exam_count = record[1]
-				active_exam_count = record[2]
-				complete_exam_count = record[3]
-			
-
-				old_record = self.nalanda_session.query(self.Exam_creation)\
-							.filter(self.Exam_creation.student_id==student_id).first()	
-
-				if not old_record:
-					nalanda_record = self.Exam_creation( student_id = student_id, exam_count=exam_count, active_exam_count= active_exam_count, \
-									 complete_exam_count = complete_exam_count)
-					self.nalanda_session.add(nalanda_record)
-
-				else:
-					self.nalanda_session.query(self.Exam_creation)\
-					.filter(self.Exam_creation.student_id == student_id)\
-					.update({'exam_count':exam_count, 'active_exam_count': active_exam_count, 'complete_exam_count':complete_exam_count})
-
-			self.nalanda_session.commit()
-
 		except Exception as e:
 			logging.basicConfig(filename='Fetcher.log', level=logging.ERROR)
 			logging.error('There is an exception in the Transformer!')
@@ -1057,43 +850,6 @@ class Transformer(object):
 			logging.error(e)
 			logging.error(traceback.format_exc())
 			raise
-	# def completed_student(self, start_date):
-	# 	try:
-	# 		result_set = self.staging_session\
-	# 					.query(self.Content_Summary_Log.c.user_id,self.Content_Summary_Log.c.content_id,\
-	# 						func.date(self.Content_Summary_Log.c.completion_timestamp),self.Content_Summary_Log.c.channel_id) \
-	# 					.filter(self.Content_Summary_Log.c.completion_timestamp >= start_date)
-	# 		for record in result_set:
-	# 			_student_id = record[0]
-	# 			student_id = self.uuid2int(_student_id)
-	# 			content_id = record[1]
-	# 			channel_id = record[3]
-	# 			date = record[2]
-	# 			student_check = self.nalanda_session.query(self.User_Info_Student.student_id)\
-	# 								.filter(self.User_Info_Student.student_id==student_id).all()
-	# 			if len(student_check)==0:
-	# 				continue
-	# 			old_record = self.nalanda_session.query(self.Mastery_Level_Student).filter(self.Mastery_Level_Student.student_id_id==student_id\
-	# 				,self.Mastery_Level_Student.content_id==content_id,self.Mastery_Level_Student.channel_id==channel_id,self.Mastery_Level_Student.date==date)\
-	# 				.first()
-	# 			if not old_record:
-	# 				nalanda_record = self.Mastery_Level_Student(id=str(uuid.uuid4()),student_id_id=student_id,content_id=content_id,\
-	# 										channel_id=channel_id,date=date,completed=True)
-	# 				self.nalanda_session.add(nalanda_record)
-	# 			else:
-	# 				self.nalanda_session.query(self.Mastery_Level_Student)\
-	# 							.filter(self.Mastery_Level_Student.student_id_id==student_id,self.Mastery_Level_Student.content_id==content_id,\
-	# 								self.Mastery_Level_Student.channel_id==channel_id,self.Mastery_Level_Student.date==date)\
-	# 							.update({'completed':True})
-	# 		self.nalanda_session.commit()
-	# 		logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
-	# 		logging.info('The synchronization of topic completion status is completed at' + time.strftime("%c"))
-	# 	except Exception as e:
-	# 		logging.basicConfig(filename='Fetcher.log', level=logging.ERROR)
-	# 		logging.error('There is an exception in the Transformer!')
-	# 		logging.error(e)
-	# 		logging.error(traceback.format_exc())
-	# 		raise
 
 	def user_session_aggregation_class(self, start_date):
 		try:

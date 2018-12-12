@@ -4,8 +4,8 @@ masteredLogData/
 masteredContentData/
 local_settings.py
 Code/Config
+Code/testpy.py
 Code/Fetcher.log
 Code/__pycache__/
-Code/testpy.py
 Download_databases_backup.py
 Download_databases.py
