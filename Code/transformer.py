@@ -41,6 +41,7 @@ class Transformer(object):
 		self.Exam_Detail_Log= Table('exams_exam',staging_metadata,autoload=True,autoload_with=self.staging_engine)
 		self.Exam_Log = Table('logger_examlog',staging_metadata,autoload=True,autoload_with=self.staging_engine)
 		self.Exam_Attempt = Table('logger_examattemptlog',staging_metadata,autoload=True,autoload_with=self.staging_engine)
+		self.City = Table('facility_city',staging_metadata,autoload=True,autoload_with=self.staging_engine)
 		self.staging_session = Session(self.staging_engine)
 		Base = automap_base()
 		engine = create_engine(nalanda_address)
@@ -155,23 +156,34 @@ class Transformer(object):
 							.query(students,self.Collection.c.level).join(self.Collection, students.c.collection_id==self.Collection.c.id)\
 							.filter(self.Collection.c.level==1).subquery()
 			result_set = self.staging_session\
-							.query(func.count(student_filter.c.id),student_filter.c.facility_id,self.Collection.c.name)\
+							.query(func.count(student_filter.c.id),student_filter.c.facility_id,self.Collection.c.name,self.Collection.c.dataset_id)\
 							.group_by(student_filter.c.facility_id)\
 							.join(self.Collection,self.Collection.c.id==student_filter.c.facility_id).all()
+
+			city_results = self.staging_session.query(self.City.c.city_initial, self.City.c.city_id).all()
+
+			city_initial_dict =  dict(city_results)
+
 			for record in result_set:
 				_school_id = record[1]
 				school_id = self.uuid2int(_school_id)
 				school_name = record[2]
 				total = record[0]
+				date = self.staging_session.query(func.date(self.Attempt_Log.c.start_timestamp)).filter(self.Attempt_Log.c.dataset_id == record[3])\
+					   .order_by(self.Attempt_Log.c.start_timestamp.desc()).first()[0]
+
+				if school_name[0] in city_initial_dict.keys():
+					parent = city_initial_dict[school_name[0]]
+
 				old_record = self.nalanda_session.query(self.User_Info_School)\
 								.filter(self.User_Info_School.school_id==school_id).first()
 				if not old_record:
-					nalanda_record = self.User_Info_School(school_id=school_id,school_name=school_name,total_students=total)
+					nalanda_record = self.User_Info_School(school_id=school_id,school_name=school_name,total_students=total, parent = parent, datetime = date)
 					self.nalanda_session.add(nalanda_record)
 				else:
 					self.nalanda_session.query(self.User_Info_School)\
 								.filter(self.User_Info_School.school_id==school_id)\
-								.update({'total_students':total, 'school_name': school_name})
+								.update({'total_students':total, 'school_name': school_name, 'parent':parent, 'datetime':date})
 			self.nalanda_session.commit()
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
 			# self.clear_resource()
