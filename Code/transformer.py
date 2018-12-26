@@ -212,7 +212,6 @@ class Transformer(object):
 			sub_topics_total = 0
 
 			for root in root_set:
-				print('root',root)
 				dic = self.dfs_content_reader(root,root[0])
 				res['topics'].append(dic)
 				total += dic['total']
@@ -243,7 +242,7 @@ class Transformer(object):
 	def dfs_content_reader(self,root, channel_id):
 		try:
 			count = 0
-			if root[2] != 'topic' and root[2] !='video':
+			if root[2] != 'topic' and root[2] !='video' and root[2] !='document':
 				exercise = self.staging_session\
 								.query(self.Assessment.c.number_of_assessments)\
 								.filter(self.Assessment.c.contentnode_id==root[0]).first()
@@ -784,7 +783,7 @@ class Transformer(object):
 						.join(self.Exam_Attempt, self.Exam_Attempt.c.examlog_id == self.Exam_Log.c.id)\
 						.filter(self.Exam_Log.c.completion_timestamp.isnot(None)).filter(self.Exam_Attempt.c.correct == 1)\
 						.group_by(self.Exam_Detail_Log.c.id, self.Exam_Attempt.c.examlog_id).all()
-			
+
 			for record in result_set:
 				exam_id = record[0]
 				exam_title = record[1]
@@ -793,24 +792,21 @@ class Transformer(object):
 				question_sources = record[4]
 				_class_id = record[5]
 				class_id = self.uuid2int(_class_id)
-				_student_id = record[7]
+				_student_id = record[6]
 				student_id = self.uuid2int(_student_id)
-				date = record[8]
-				correct_questions= record[9]
+				date = record[7]
+				correct_questions= record[8]
 
 				old_record = self.nalanda_session.query(self.Exam).filter(self.Exam.exam_id == exam_id)\
 							.filter(self.Exam.student_id == student_id).filter(self.Exam.date == date).first()
 
 				if not old_record:
-					print('IF')
 					nalanda_record = self.Exam(id=str(uuid.uuid4()),exam_id = exam_id, exam_title=exam_title, \
 									 channel_id=channel_id, question_count=question_count, question_sources=question_sources,\
 									 class_id=class_id,student_id=student_id,date=date, correct_questions=correct_questions)
 					self.nalanda_session.add(nalanda_record)
 					
-
 				else:
-					print('else')
 					self.nalanda_session.query(self.Exam)\
 					.filter(self.Exam.exam_id == exam_id, self.Exam.student_id == student_id, self.Exam.date == date)\
 					.update({'exam_title':exam_title, 'channel_id':channel_id, 'question_count':question_count,'question_sources':question_sources,\
