@@ -16,7 +16,7 @@ import datetime
 import re
 
 import pytz
-
+l = []
 tz_format = "({tz})"
 tz_regex = re.compile("\(([^\)]+)\)")
 
@@ -74,7 +74,7 @@ class Transformer(object):
 			result_set = self.staging_session\
 							.query(student_mapping,self.Collection.c.level,self.Collection.c.parent_id)\
 							.join(self.Collection,student_mapping.c.collection_id==self.Collection.c.id).all()
-			
+	
 			for record in result_set:
 				level = record[3]
 				if level==1:
@@ -116,6 +116,7 @@ class Transformer(object):
 							.query(self.Collection.c.id,self.Collection.c.name,self.Collection.c.parent_id,student_count)\
 							.filter(self.Collection.c.level==1)\
 							.join(student_count, student_count.c.collection_id==self.Collection.c.id).all()
+
 			for record in result_set:
 				_class_id = record[0]
 				class_id = self.uuid2int(_class_id)
@@ -200,8 +201,6 @@ class Transformer(object):
 			logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
 			logging.info('The synchronization of sync_content is started at'+ time.strftime("%c"))
 
-			
-			
 			root_set = self.staging_session\
 							.query(self.Content_Node.c.id,self.Content_Node.c.title,self.Content_Node.c.kind,self.Content_Node.c.content_id)\
 							.filter(self.Content_Node.c.level==0)\
@@ -247,6 +246,7 @@ class Transformer(object):
 								.query(self.Assessment.c.number_of_assessments)\
 								.filter(self.Assessment.c.contentnode_id==root[0]).first()
 				res = {}
+				
 				if exercise:
 					res['id'] = root[0]
 					res['channelId'] = channel_id
@@ -259,28 +259,30 @@ class Transformer(object):
 					res['total'] = 0
 					res['counts'] = 0
 				count = res['counts']
-				parentid = self.staging_session\
-						.query(self.Content_Node.c.parent_id)\
-						.filter(self.Content_Node.c.id ==res['id']).filter(self.Content_Node.c.content_id ==res['contentId']).all()
-				
-				for record in parentid:
-					res['parent_id'] = record[0]
-				json_obj = json.dumps(res, ensure_ascii=False)
-				old_record = self.nalanda_session.query(self.Content).filter(self.Content.topic_id==result[0]).first()
-			
-				if not old_record:
-					
-					nalanda_record = self.Content(topic_id=res['id'],content_id=res['contentId'],channel_id=res['channelId'],
-													topic_name=res['name'],total_questions=res['total'],sub_topics=json_obj, sub_topics_total=res['counts'],parent_id=res['parent_id'])
-
-					self.nalanda_session.add(nalanda_record)
+				if exercise is None:
+					pass
 				else:
-					self.nalanda_session.query(self.Content)\
-								.filter(self.Content.topic_id==res['id'])\
-								.update({'content_id':res['contentId'],'channel_id':res['channelId'],'topic_name':res['name'],\
-									'total_questions':res['total'],'sub_topics':json_obj,'sub_topics_total':res['counts'],'parent_id':res['parent_id']})
-				self.nalanda_session.commit()
-				return res
+					parentid = self.staging_session\
+							.query(self.Content_Node.c.parent_id)\
+							.filter(self.Content_Node.c.id ==res['id']).filter(self.Content_Node.c.content_id ==res['contentId']).all()			
+					for record in parentid:
+						res['parent_id'] = record[0]
+					json_obj = json.dumps(res, ensure_ascii=False)
+					old_record = self.nalanda_session.query(self.Content).filter(self.Content.topic_id==result[0]).first()
+				
+					if not old_record:
+						
+						nalanda_record = self.Content(topic_id=res['id'],content_id=res['contentId'],channel_id=res['channelId'],
+														topic_name=res['name'],total_questions=res['total'],sub_topics=json_obj, sub_topics_total=res['counts'],parent_id=res['parent_id'])
+
+						self.nalanda_session.add(nalanda_record)
+					else:
+						self.nalanda_session.query(self.Content)\
+									.filter(self.Content.topic_id==res['id'])\
+									.update({'content_id':res['contentId'],'channel_id':res['channelId'],'topic_name':res['name'],\
+										'total_questions':res['total'],'sub_topics':json_obj,'sub_topics_total':res['counts'],'parent_id':res['parent_id']})
+					self.nalanda_session.commit()
+					return res
 
 			elif root[2] == 'topic' or root[2] == 'exercise':
 				sub_level = self.staging_session\
@@ -334,9 +336,6 @@ class Transformer(object):
 			logging.error(e)
 			logging.error(traceback.format_exc())
 			raise
-	# def parent_node(self):
-	# 	result = self.staging_session\
-	# 			.query(self.Content_Node.c.id,)
 
 	def completed_questions_aggregation_student(self, start_date):
 		try:
@@ -386,8 +385,6 @@ class Transformer(object):
 							current_id = parent_id[0]
 						else:
 							current_id = None
-							logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
-							logging.info("Inside else")
 				ids.add('')
 				for _id in ids:
 					try:
@@ -443,6 +440,7 @@ class Transformer(object):
 						.join(self.Content_Summary_Log, self.Content_Summary_Log.c.id==join_mastery_log.c.summarylog_id)\
 						.group_by(join_mastery_log.c.date,join_mastery_log.c.user_id,join_mastery_log.c.summarylog_id)\
 						.all()
+
 			for record in result_set:
 				_student_id = record[0]
 				if _student_id:
@@ -615,7 +613,11 @@ class Transformer(object):
 					while current_id:
 						ids.add(current_id)
 						parent_id = self.staging_session.query(self.Content_Node.c.parent_id).filter(self.Content_Node.c.id==current_id).first()
-						current_id = parent_id[0]
+						if parent_id:
+							current_id = parent_id[0]
+						else:
+							current_id = None
+						#current_id = parent_id[0]
 				ids.add('')
 				for id in ids:
 					temp = channel_id
