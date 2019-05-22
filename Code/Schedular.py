@@ -10,13 +10,13 @@ from Transformer_plumber import Transformer_plumber
 def doETL():
     logging.basicConfig(filename='Fetcher.log', level=logging.INFO)
     start_time = datetime.datetime.now()
-    #fetch_plumber = FetcherPlumber()
-    transform_plumber = Transformer_plumber()
-    #fetch_plumber.SourceToStagingJob()
-    transform_plumber.execute()
+    fetch_plumber = FetcherPlumber()
+    # transform_plumber = Transformer_plumber()
+    fetch_plumber.SourceToStagingJob()
+    # transform_plumber.execute()
     end_time = datetime.datetime.now()
-    total_time = end_time-start_time
-    logging.info("Complete time is : "+str((total_time.seconds)/60))
+    # total_time = end_time-start_time
+    # logging.info("Complete time is : "+str((total_time.seconds)/60))
 
 if __name__ == "__main__":
     try:
