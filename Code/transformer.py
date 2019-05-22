@@ -165,6 +165,7 @@ class Transformer(object):
 
 			city_initial_dict =  dict(city_results)
 
+			print("result_set:",result_set)
 			for record in result_set:
 				_school_id = record[1]
 				school_id = self.uuid2int(_school_id)
@@ -173,8 +174,11 @@ class Transformer(object):
 				date = self.staging_session.query(func.date(self.Attempt_Log.c.start_timestamp)).filter(self.Attempt_Log.c.dataset_id == record[3])\
 					   .order_by(self.Attempt_Log.c.start_timestamp.desc()).first()[0]
 
+				
+				print("city_initial_dict",city_initial_dict)
 				if school_name[0] in city_initial_dict.keys():
 					parent = city_initial_dict[school_name[0]]
+					print("city_initial_dict",city_initial_dict)
 
 				old_record = self.nalanda_session.query(self.User_Info_School)\
 								.filter(self.User_Info_School.school_id==school_id).first()
@@ -729,6 +733,8 @@ class Transformer(object):
 						.filter(self.Usersession_Log.c.last_interaction_timestamp >= start_date)\
 						.all()
 
+			# print("Result:",result)
+			print("Result Set:",result_set)
 			for record in result_set:
 				_student_id = record[0]
 				if _student_id:
