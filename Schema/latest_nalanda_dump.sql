@@ -233,6 +233,8 @@ CREATE TABLE `account_userinfoschool` (
   `school_id` bigint(20) NOT NULL,
   `school_name` varchar(60) NOT NULL,
   `total_students` int(11) NOT NULL,
+  `parent` int(11) NOT NULL,
+  `datetime` datetime(6) NULL,
   PRIMARY KEY (`school_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
