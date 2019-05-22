@@ -115,11 +115,17 @@ class Fetcher(object):
                    res = self.checkRecordExist(str(row[0]), EntityTable, sinkConnection, row)
                    if res != 0: 
                         # logging.info("inside else kolibriauth_collection") 
+                        # 
+                        # stmt = update(EntityTable).where(EntityTable.c.id==str(row[0])).values({EntityTable.c._morango_dirty_bit: row[1], \
+                        #        EntityTable.c._morango_source_id:row[2], EntityTable.c._morango_partition:row[3], EntityTable.c.item: row[4],EntityTable.c.start_timestamp:row[5] , \
+                        #        EntityTable.c.end_timestamp:row[6],EntityTable.c.completion_timestamp:row[7], EntityTable.c.time_spent:row[8] ,EntityTable.c.complete:row[9], EntityTable.c.correct:row[10], \
+                        #        EntityTable.c.hinted:row[11], EntityTable.c.answer:row[12], EntityTable.c.simple_answer:row[13],EntityTable.c.interaction_history:row[14],EntityTable.c.dataset_id:row[15], \
+                        #        EntityTable.c.masterylog_id:row[16], EntityTable.c.sessionlog_id:row[17], EntityTable.c.user_id:row[18] })
                         stmt = update(EntityTable).where(EntityTable.c.id==str(row[0])).values({EntityTable.c._morango_dirty_bit: row[1], \
-                               EntityTable.c._morango_source_id:row[2], EntityTable.c._morango_partition:row[3], EntityTable.c.item: row[4],EntityTable.c.start_timestamp:row[18] , \
-                               EntityTable.c.end_timestamp:row[5],EntityTable.c.completion_timestamp:row[6],EntityTable.c.time_spent:row[7], EntityTable.c.complete:row[8], EntityTable.c.correct:row[9], \
-                               EntityTable.c.hinted:row[10], EntityTable.c.answer:row[11], EntityTable.c.simple_answer:row[12],EntityTable.c.interaction_history:row[13],EntityTable.c.dataset_id:row[14], \
-                               EntityTable.c.masterylog_id:row[15], EntityTable.c.sessionlog_id:row[16], EntityTable.c.user_id:row[17] })
+                                EntityTable.c._morango_source_id:row[2], EntityTable.c._morango_partition:row[3], EntityTable.c.item: row[4],EntityTable.c.start_timestamp:row[18] , \
+                                EntityTable.c.end_timestamp:row[5],EntityTable.c.completion_timestamp:row[6], EntityTable.c.time_spent:row[7] ,EntityTable.c.complete:row[8], EntityTable.c.correct:row[9], \
+                                EntityTable.c.hinted:row[10], EntityTable.c.answer:row[11], EntityTable.c.simple_answer:row[12],EntityTable.c.interaction_history:row[13],EntityTable.c.dataset_id:row[14], \
+                                EntityTable.c.masterylog_id:row[15], EntityTable.c.sessionlog_id:row[16], EntityTable.c.user_id:row[17] })
                         # logging.info(str(stmt))
                         
                         sinkConnection.execute(stmt)  
@@ -171,8 +177,8 @@ class Fetcher(object):
                         # logging.info("inside else kolibriauth_collection") 
                         stmt = update(EntityTable).where(EntityTable.c.id==str(row[0])).values({EntityTable.c._morango_dirty_bit: row[1], \
                                EntityTable.c._morango_source_id:row[2], EntityTable.c._morango_partition:row[3], EntityTable.c.title: row[4], \
-                               EntityTable.c.channel_id:row[5], EntityTable.c.question_count:row[6],\
-                               EntityTable.c.question_sources:row[7], EntityTable.c.seed:row[8], EntityTable.c.active:row[9], EntityTable.c.archive:row[10], EntityTable.c.collection_id:row[11], EntityTable.c.creator_id:row[12], EntityTable.c.dataset_id:row[13]})
+                               EntityTable.c.question_count:row[5],\
+                               EntityTable.c.question_sources:row[6], EntityTable.c.seed:row[7], EntityTable.c.active:row[8], EntityTable.c.archive:row[9], EntityTable.c.collection_id:row[10], EntityTable.c.creator_id:row[11], EntityTable.c.dataset_id:row[12]})
                 elif str(EntityTable.name) == 'logger_examlog':
                     res = self.checkRecordExist(str(row[0]), EntityTable, sinkConnection, row)
                     if res != 0:
@@ -190,19 +196,33 @@ class Fetcher(object):
                                EntityTable.c.end_timestamp:row[5], EntityTable.c.completion_timestamp:row[6], EntityTable.c.time_spent:row[7],\
                                EntityTable.c.complete:row[8], EntityTable.c.correct:row[9], EntityTable.c.hinted:row[10], EntityTable.c.answer:row[11], \
                                EntityTable.c.simple_answer:row[12], EntityTable.c.interaction_history:row[13], EntityTable.c.content_id:row[14],\
-                               EntityTable.c.channel_id:row[15], EntityTable.c.dataset_id:row[16], EntityTable.c.examlog_id:row[17], EntityTable.c.user_id:row[18], EntityTable.c.start_timestamp:row[19] })
+                               EntityTable.c.dataset_id:row[15], EntityTable.c.examlog_id:row[16], EntityTable.c.user_id:row[17], EntityTable.c.start_timestamp:row[18] })
+                
+                # elif str(EntityTable.name) == 'content_contentnode':
+                #     res = self.checkRecordExist(str(row[0]), EntityTable, sinkConnection, row)
+                #     if res != 0:
+                #         # logging.info("inside else kolibriauth_collection") 
+                #         stmt = update(EntityTable).where(EntityTable.c.id==str(row[0])).values({EntityTable.c.title: row[1], \
+                #                EntityTable.c.content_id:row[2], EntityTable.c.channel_id:row[3], EntityTable.c.description: row[4], \
+                #                EntityTable.c.sort_order:row[5], EntityTable.c.license_owner:row[6], EntityTable.c.author:row[7],\
+                #                EntityTable.c.kind:row[8], EntityTable.c.available:row[9], EntityTable.c.stemmed_metaphone:row[10], EntityTable.c.lft:row[11], \
+                #                EntityTable.c.rght:row[12], EntityTable.c.tree_id:row[13], EntityTable.c.level:row[14],\
+                #                EntityTable.c.lang_id:row[15], EntityTable.c.license_name:row[16], EntityTable.c.coach_content:row[17], EntityTable.c.license_description:row[18], EntityTable.c.parent_id:row[19]})
+                
                 
                 elif str(EntityTable.name) == 'content_contentnode':
                     res = self.checkRecordExist(str(row[0]), EntityTable, sinkConnection, row)
                     if res != 0:
                         # logging.info("inside else kolibriauth_collection") 
-                        stmt = update(EntityTable).where(EntityTable.c.id==str(row[0])).values({EntityTable.c.title: row[1], \
-                               EntityTable.c.content_id:row[2], EntityTable.c.channel_id:row[3], EntityTable.c.description: row[4], \
-                               EntityTable.c.sort_order:row[5], EntityTable.c.license_owner:row[6], EntityTable.c.author:row[7],\
-                               EntityTable.c.kind:row[8], EntityTable.c.available:row[9], EntityTable.c.stemmed_metaphone:row[10], EntityTable.c.lft:row[11], \
-                               EntityTable.c.rght:row[12], EntityTable.c.tree_id:row[13], EntityTable.c.level:row[14],\
-                               EntityTable.c.lang_id:row[15], EntityTable.c.license_name:row[16], EntityTable.c.license_description:row[17], EntityTable.c.parent_id:row[18]})
-                
+                        stmt = update(EntityTable).where(EntityTable.c.id==str(row[0])).values({EntityTable.c.license_name: row[1], \
+                               EntityTable.c.license_description:row[2], EntityTable.c.title:row[3], EntityTable.c.content_id: row[4], \
+                               EntityTable.c.channel_id:row[5], EntityTable.c.description:row[6], EntityTable.c.sort_order:row[7],\
+                               EntityTable.c.license_owner:row[8], EntityTable.c.author:row[9], EntityTable.c.kind:row[10], EntityTable.c.available:row[11], \
+                               EntityTable.c.stemmed_metaphone:row[12], EntityTable.c.lft:row[13], EntityTable.c.rght:row[14],\
+                               EntityTable.c.tree_id:row[15], EntityTable.c.level:row[16], EntityTable.c.lang_id:row[17], EntityTable.c.license_id:row[18], EntityTable.c.coach_content:row[19], EntityTable.c.parent_id:row[20] })
+
+
+
                 elif str(EntityTable.name) == 'content_assessmentmetadata':
                     res = self.checkRecordExist(str(row[0]), EntityTable, sinkConnection, row)
                     if res != 0:
